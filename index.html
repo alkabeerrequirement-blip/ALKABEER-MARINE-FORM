@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Seafarer Bank Details Form | ALKABEER</title>
+  <style>
+    :root {
+      font-family: "Times New Roman", Times, serif;
+      color: #111;
+      background: #eee;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      font-size: 12pt;
+      line-height: 1.25;
+    }
+
+    .document {
+      width: min(100%, 210mm);
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 14mm 13mm 12mm;
+      background: #fff;
+      border: 1px solid #aaa;
+    }
+
+    .company-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 88px;
+      margin-bottom: 15px;
+    }
+
+    .company-logo {
+      display: block;
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+    }
+
+    .form-title {
+      margin: 0 0 15px;
+      padding: 8px 6px;
+      border: 1px solid #111;
+      font-size: 13pt;
+      line-height: 1.2;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .section { margin-top: 13px; }
+
+    .section-heading {
+      margin: 0;
+      padding: 6px 7px;
+      border: 1px solid #111;
+      border-bottom: 0;
+      font-size: 11pt;
+      text-transform: uppercase;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 1px solid #111;
+      border-left: 1px solid #111;
+    }
+
+    .field-grid[hidden] { display: none; }
+
+    .field {
+      display: grid;
+      grid-template-columns: minmax(105px, 42%) minmax(0, 1fr);
+      min-height: 39px;
+      border-right: 1px solid #111;
+      border-bottom: 1px solid #111;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    .field label {
+      display: flex;
+      align-items: center;
+      padding: 5px 7px;
+      font-weight: 700;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      min-width: 0;
+      padding: 5px 7px;
+      border: 0;
+      border-left: 1px solid #111;
+      border-radius: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+    }
+
+    .field textarea {
+      min-height: 48px;
+      resize: vertical;
+    }
+
+    input:focus-visible,
+    textarea:focus-visible,
+    button:focus-visible {
+      outline: 2px solid #174d66;
+      outline-offset: -2px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 5px 7px;
+      border: 1px solid #111;
+      border-top: 0;
+      font-weight: 700;
+    }
+
+    .option-row input { width: 15px; height: 15px; margin: 0; }
+
+    .signature-row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(140px, 1fr);
+      margin-top: 20px;
+      border: 1px solid #111;
+    }
+
+    .signature-cell {
+      display: flex;
+      min-height: 135px;
+      flex-direction: column;
+      gap: 6px;
+      padding: 7px;
+    }
+
+    .signature-cell + .signature-cell { border-left: 1px solid #111; }
+    .signature-label { margin: 0; font-weight: 700; }
+    .signature-cell input:not([type="file"]) { width: 100%; border: 0; border-bottom: 1px solid #111; border-radius: 0; font: inherit; }
+
+    .signature-mark-area {
+      display: flex;
+      min-height: 58px;
+      flex-direction: column;
+      justify-content: flex-end;
+      border-bottom: 1px solid #111;
+    }
+
+    .signature-preview {
+      display: block;
+      max-width: 100%;
+      max-height: 50px;
+      align-self: flex-start;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .signature-preview[hidden] { display: none; }
+    .signature-upload-control { display: flex; flex-direction: column; gap: 3px; font-size: 9pt; }
+    .signature-upload-control input { max-width: 100%; }
+    .signature-upload-status { margin: 0; font-size: 9pt; }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin: 16px auto 0;
+    }
+
+    .actions button {
+      padding: 7px 13px;
+      border: 1px solid #111;
+      border-radius: 0;
+      background: #fff;
+      color: #111;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .actions button:hover { background: #eee; }
+
+    @media (max-width: 620px) {
+      body { padding: 0; }
+      .document { min-height: 100vh; padding: 18px 12px; border: 0; }
+      .field-grid { grid-template-columns: minmax(0, 1fr); }
+      .field.full { grid-column: auto; }
+      .field { grid-template-columns: minmax(118px, 40%) minmax(0, 1fr); }
+      .signature-row { grid-template-columns: minmax(0, 1.5fr) minmax(110px, 1fr); }
+      .actions { flex-wrap: wrap; }
+    }
+
+    @page { size: A4 portrait; margin: 12mm; }
+
+    @media print {
+      :root, body { background: #fff; }
+      body { padding: 0; font-size: 10pt; }
+      .document { width: auto; min-height: 0; margin: 0; padding: 0; border: 0; }
+      .company-header { margin-bottom: 10px; }
+      .form-title { margin-bottom: 10px; padding: 6px; font-size: 11pt; }
+      .section { margin-top: 9px; break-inside: avoid; page-break-inside: avoid; }
+      .field { min-height: 31px; }
+      .field label { padding: 3px 5px; }
+      .field input, .field textarea { padding: 3px 5px; }
+      .field textarea { min-height: 37px; }
+      .signature-row { margin-top: 14px; break-inside: avoid; page-break-inside: avoid; }
+      .signature-cell { min-height: 88px; }
+      .signature-mark-area { min-height: 50px; }
+      .signature-upload-control, .signature-upload-status { display: none !important; }
+      .actions { display: none !important; }
+      input, textarea { color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <main class="document">
+    <header class="company-header">
+      <img class="company-logo" src="alkabeer-logo.png" alt="Al Kabeer &amp; Partners Marine logo" width="88" height="88">
+    </header>
+
+    <form id="bank-details-form">
+      <h1 class="form-title">RESPONSIBILITY OF CORRECTNESS FOR BANK DETAILS IS ON SEAFARERS</h1>
+
+      <section class="section" aria-labelledby="seafarer-heading">
+        <h2 class="section-heading" id="seafarer-heading">Seafarer Details</h2>
+        <div class="field-grid">
+          <div class="field full">
+            <label for="seafarer-name">NAME <span aria-hidden="true">*</span></label>
+            <input id="seafarer-name" name="seafarerName" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="vessel-name">Vessel Name</label>
+            <input id="vessel-name" name="vesselName" type="text">
+          </div>
+          <div class="field">
+            <label for="rank">Rank</label>
+            <input id="rank" name="rank" type="text">
+          </div>
+          <div class="field">
+            <label for="joining-date">Joining Date</label>
+            <input id="joining-date" name="joiningDate" type="date">
+          </div>
+          <div class="field">
+            <label for="port">Port</label>
+            <input id="port" name="port" type="text">
+          </div>
+          <div class="field full">
+            <label for="monthly-dues">Monthly Dues All Including in USD</label>
+            <input id="monthly-dues" name="monthlyDues" type="number" min="0" step="0.01" inputmode="decimal">
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="beneficiary-heading">
+        <h2 class="section-heading" id="beneficiary-heading">BENEFICIARY &amp; BANK DETAILS</h2>
+        <div class="field-grid">
+          <div class="field">
+            <label for="account-holder">Name of the Account Holder <span aria-hidden="true">*</span></label>
+            <input id="account-holder" name="accountHolder" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="account-number">Account Number <span aria-hidden="true">*</span></label>
+            <input id="account-number" name="accountNumber" type="text" autocomplete="off" required>
+          </div>
+          <div class="field">
+            <label for="bank-name">Bank Name <span aria-hidden="true">*</span></label>
+            <input id="bank-name" name="bankName" type="text" required>
+          </div>
+          <div class="field">
+            <label for="branch-name">Branch Name</label>
+            <input id="branch-name" name="branchName" type="text">
+          </div>
+          <div class="field">
+            <label for="bank-city">City</label>
+            <input id="bank-city" name="bankCity" type="text" autocomplete="address-level2">
+          </div>
+          <div class="field">
+            <label for="bank-country">Country <span aria-hidden="true">*</span></label>
+            <input id="bank-country" name="bankCountry" type="text" autocomplete="country-name" required>
+          </div>
+          <div class="field">
+            <label for="swift-code">SWIFT Code</label>
+            <input id="swift-code" name="swiftCode" type="text" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="ifsc-code">IFSC Code (For Indians)</label>
+            <input id="ifsc-code" name="ifscCode" type="text" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field full">
+            <label for="bank-address">Bank Address</label>
+            <textarea id="bank-address" name="bankAddress" autocomplete="street-address"></textarea>
+          </div>
+          <div class="field">
+            <label for="branch-code">Branch Code</label>
+            <input id="branch-code" name="branchCode" type="text" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label for="beneficiary-relation">Beneficiary’s Relation with Crew (if the beneficiary's name differs from the crew member's name)</label>
+            <input id="beneficiary-relation" name="beneficiaryRelation" type="text">
+          </div>
+          <div class="field">
+            <label for="iban-number">IBAN Number (Mandatory for Pakistani Crew)</label>
+            <input id="iban-number" name="ibanNumber" type="text" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="beneficiary-father">Beneficiary’s Father Name</label>
+            <input id="beneficiary-father" name="beneficiaryFatherName" type="text">
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="intermediary-heading">
+        <h2 class="section-heading" id="intermediary-heading">INTERMEDIARY BANK DETAILS (IF REQUIRED)</h2>
+        <label class="option-row" for="intermediary-required">
+          <input id="intermediary-required" name="intermediaryRequired" type="checkbox" aria-controls="intermediary-fields" aria-expanded="false">
+          Intermediary bank details required
+        </label>
+        <div class="field-grid" id="intermediary-fields" hidden>
+          <div class="field">
+            <label for="intermediary-beneficiary">Beneficiary Name</label>
+            <input id="intermediary-beneficiary" name="intermediaryBeneficiary" type="text">
+          </div>
+          <div class="field">
+            <label for="intermediary-account">Account Number</label>
+            <input id="intermediary-account" name="intermediaryAccount" type="text" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="intermediary-bank">Bank Name</label>
+            <input id="intermediary-bank" name="intermediaryBank" type="text">
+          </div>
+          <div class="field">
+            <label for="intermediary-branch">Branch Name</label>
+            <input id="intermediary-branch" name="intermediaryBranch" type="text">
+          </div>
+          <div class="field">
+            <label for="intermediary-city">City</label>
+            <input id="intermediary-city" name="intermediaryCity" type="text">
+          </div>
+          <div class="field">
+            <label for="intermediary-country">Country</label>
+            <input id="intermediary-country" name="intermediaryCountry" type="text">
+          </div>
+          <div class="field">
+            <label for="intermediary-swift">SWIFT Code</label>
+            <input id="intermediary-swift" name="intermediarySwift" type="text" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field full">
+            <label for="intermediary-address">Bank Address</label>
+            <textarea id="intermediary-address" name="intermediaryAddress"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="signature-row" aria-label="Signature and date">
+        <div class="signature-cell">
+          <p class="signature-label">Signature of Seafarer</p>
+          <div class="signature-mark-area">
+            <img class="signature-preview" id="signature-preview" alt="Uploaded seafarer signature" hidden>
+          </div>
+          <div class="signature-upload-control">
+            <label for="signature-file">Upload signature file (PNG, JPG, WebP)</label>
+            <input id="signature-file" name="signatureFile" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" aria-describedby="signature-upload-status">
+          </div>
+          <p class="signature-upload-status" id="signature-upload-status" role="status" aria-live="polite"></p>
+        </div>
+        <div class="signature-cell">
+          <label for="signature-date">Date</label>
+          <input id="signature-date" name="signatureDate" type="date">
+        </div>
+      </section>
+
+      <div class="actions" aria-label="Form actions">
+        <button type="submit" id="email-form">Submit by Email</button>
+        <button type="button" id="print-form">Print Form</button>
+        <button type="button" id="save-pdf">Save as PDF</button>
+        <button type="reset" id="reset-form">Reset Form</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    const form = document.getElementById('bank-details-form');
+    const intermediaryToggle = document.getElementById('intermediary-required');
+    const intermediaryFields = document.getElementById('intermediary-fields');
+    const signatureFileInput = document.getElementById('signature-file');
+    const signaturePreview = document.getElementById('signature-preview');
+    const signatureUploadStatus = document.getElementById('signature-upload-status');
+    let signaturePreviewUrl = '';
+
+    function clearSignaturePreview() {
+      if (signaturePreviewUrl) URL.revokeObjectURL(signaturePreviewUrl);
+      signaturePreviewUrl = '';
+      signaturePreview.removeAttribute('src');
+      signaturePreview.hidden = true;
+      signatureUploadStatus.textContent = '';
+    }
+
+    function updateIntermediaryFields() {
+      intermediaryFields.hidden = !intermediaryToggle.checked;
+      intermediaryToggle.setAttribute('aria-expanded', String(intermediaryToggle.checked));
+    }
+
+    function printIfValid() {
+      if (form.reportValidity()) window.print();
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const details = [...form.querySelectorAll('input[name], textarea[name]')]
+        .filter((field) => !field.closest('[hidden]') && field.type !== 'checkbox' && field.type !== 'file')
+        .map((field) => {
+          const label = field.labels[0]?.textContent.replace('*', '').trim() || field.name;
+          return `${label}: ${field.value.trim() || '(blank)'}`;
+        });
+      details.push(`Intermediary bank details required: ${intermediaryToggle.checked ? 'Yes' : 'No'}`);
+      if (signatureFileInput.files[0]) details.push('Signature image selected; attach the image file manually to this email.');
+
+      const subject = `Seafarer Bank Details - ${document.getElementById('seafarer-name').value.trim()}`;
+      const body = `Seafarer Bank Details Form\n\n${details.join('\n')}`;
+      const email = 'offshore@alkabeerandpartners.com';
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+
+    intermediaryToggle.addEventListener('change', updateIntermediaryFields);
+    signatureFileInput.addEventListener('change', () => {
+      const file = signatureFileInput.files[0];
+      if (!file) return;
+
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+        signatureFileInput.value = '';
+        clearSignaturePreview();
+        signatureUploadStatus.textContent = 'Choose a PNG, JPG, or WebP image.';
+        return;
+      }
+
+      if (signaturePreviewUrl) URL.revokeObjectURL(signaturePreviewUrl);
+      signaturePreviewUrl = URL.createObjectURL(file);
+      signaturePreview.src = signaturePreviewUrl;
+      signaturePreview.hidden = false;
+      signatureUploadStatus.textContent = `${file.name} selected. Attach the image manually when emailing the form.`;
+    });
+    document.getElementById('print-form').addEventListener('click', printIfValid);
+    document.getElementById('save-pdf').addEventListener('click', printIfValid);
+    document.getElementById('reset-form').addEventListener('click', (event) => {
+      if (!window.confirm('Reset all entered bank details?')) event.preventDefault();
+    });
+    form.addEventListener('reset', () => requestAnimationFrame(() => {
+      updateIntermediaryFields();
+      clearSignaturePreview();
+    }));
+  </script>
+</body>
+</html>
