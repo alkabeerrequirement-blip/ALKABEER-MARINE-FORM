@@ -7,9 +7,12 @@
   <title>Seafarer Bank Details Form | ALKABEER</title>
   <style>
     :root {
-      --ink: #172630;
-      --rule: #65727a;
-      --label-fill: #f3f5f6;
+      --ink: #172b57;
+      --navy: #172b57;
+      --marine: #367bb3;
+      --gold: #c7a34b;
+      --rule: #71849a;
+      --label-fill: #edf3f9;
       font-family: "Times New Roman", Times, serif;
       color: var(--ink);
       background: #e8ecee;
@@ -43,7 +46,7 @@
       min-height: 88px;
       margin-bottom: 13px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #aeb9bf;
+      border-bottom: 2px solid var(--gold);
     }
 
     .company-logo {
@@ -62,9 +65,10 @@
     .form-title {
       margin: 0 0 15px;
       padding: 8px 6px;
-      border: 1px solid var(--ink);
-      background: #f1f4f5;
-      color: var(--ink);
+      border: 1px solid var(--navy);
+      border-bottom: 3px solid var(--gold);
+      background: var(--navy);
+      color: #fff;
       font-size: 13pt;
       line-height: 1.2;
       text-align: center;
@@ -76,12 +80,13 @@
     .section-heading {
       margin: 0;
       padding: 6px 7px;
-      border: 1px solid var(--ink);
+      border: 1px solid var(--rule);
+      border-left: 4px solid var(--gold);
       border-bottom: 0;
       font-size: 11pt;
       text-transform: uppercase;
-      background: #e9eef0;
-      color: var(--ink);
+      background: #e8f0f8;
+      color: var(--navy);
     }
 
     .field-grid {
@@ -118,7 +123,7 @@
       min-width: 0;
       padding: 5px 7px;
       border: 0;
-      border-left: 1px solid #111;
+      border-left: 1px solid #c4d0dd;
       border-radius: 0;
       background: transparent;
       color: inherit;
@@ -133,7 +138,7 @@
     input:focus-visible,
     textarea:focus-visible,
     button:focus-visible {
-      outline: 2px solid #174d66;
+      outline: 2px solid var(--marine);
       outline-offset: -2px;
     }
 
@@ -200,15 +205,17 @@
 
     .actions button {
       padding: 7px 13px;
-      border: 1px solid #111;
+      border: 1px solid var(--navy);
       border-radius: 0;
-      background: #fff;
-      color: #111;
+      background: var(--navy);
+      color: #fff;
       font: inherit;
       cursor: pointer;
     }
 
-    .actions button:hover { background: #eee; }
+    .actions button:hover { background: var(--marine); border-color: var(--marine); }
+    #reset-form { background: #fff; color: var(--navy); }
+    #reset-form:hover { background: #edf3f9; border-color: var(--marine); }
 
     @media (max-width: 620px) {
       body { padding: 0; }
@@ -241,8 +248,10 @@
       .company-logo { width: 64px; height: 64px; flex: 0 0 64px; }
       .company-name { margin-bottom: 2px; font-size: 14pt; }
       .company-address, .company-contact { margin: 1px 0; font-size: 8pt; }
-      .company-header { border-bottom-color: #777; }
+      .company-header { border-bottom-color: #777; border-bottom-width: 1px; }
       .section-heading, .form-title, .field label { background: #fff; color: #111; }
+      .section-heading { border-left: 1px solid #111; }
+      .form-title { border: 1px solid #111; }
       .field-grid, .field { border-color: #111; }
       .form-title { margin-bottom: 10px; padding: 6px; font-size: 11pt; }
       .section { margin-top: 9px; break-inside: avoid; page-break-inside: avoid; }
