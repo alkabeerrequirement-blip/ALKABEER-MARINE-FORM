@@ -216,9 +216,9 @@
       .field-grid { grid-template-columns: minmax(0, 1fr); }
       .field.full { grid-column: auto; }
       .field { grid-template-columns: minmax(0, 1fr); min-height: 0; }
-      .field label { min-height: 30px; padding: 5px 8px; }
-      .field input, .field textarea { min-height: 39px; border-left: 0; border-top: 1px solid #d4dade; background: #fff; }
-      .field textarea { min-height: 58px; }
+      .field label { min-height: 27px; padding: 4px 8px; font-size: 10.5pt; }
+      .field input, .field textarea { min-height: 35px; padding: 4px 8px; border-left: 0; border-top: 1px solid #d4dade; background: #fff; }
+      .field textarea { min-height: 52px; }
       .section { margin-top: 11px; }
       .section-heading { padding: 7px 8px; }
       .form-title { font-size: 12pt; }
@@ -227,7 +227,8 @@
       .company-logo { width: 66px; height: 66px; flex: 0 0 66px; }
       .company-name { font-size: 13pt; }
       .company-address, .company-contact { font-size: 9pt; overflow-wrap: anywhere; }
-      .actions { flex-wrap: wrap; }
+      .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 7px; }
+      .actions button { min-height: 40px; padding: 6px; }
     }
 
     @page { size: A4 portrait; margin: 12mm; }
