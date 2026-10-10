@@ -182,20 +182,6 @@
       border-bottom: 1px solid #111;
     }
 
-    .signature-preview {
-      display: block;
-      max-width: 100%;
-      max-height: 50px;
-      align-self: flex-start;
-      object-fit: contain;
-      object-position: left center;
-    }
-
-    .signature-preview[hidden] { display: none; }
-    .signature-upload-control { display: flex; flex-direction: column; gap: 3px; font-size: 9pt; }
-    .signature-upload-control input { max-width: 100%; }
-    .signature-upload-status { margin: 0; font-size: 9pt; }
-
     .actions {
       display: flex;
       justify-content: center;
@@ -216,6 +202,10 @@
     .actions button:hover { background: var(--marine); border-color: var(--marine); }
     #reset-form { background: #fff; color: var(--navy); }
     #reset-form:hover { background: #edf3f9; border-color: var(--marine); }
+    .submission-status { min-height: 1.25em; margin: 8px 0 0; text-align: center; font-weight: 700; }
+    .submission-status[data-state="error"] { color: #9d2525; }
+    .submission-status[data-state="success"] { color: #23633b; }
+    .submission-notice { margin: 10px 0 0; color: #4b5b67; font-size: 9pt; text-align: center; }
 
     @media (max-width: 620px) {
       body { padding: 0; }
@@ -262,8 +252,7 @@
       .signature-row { margin-top: 14px; break-inside: avoid; page-break-inside: avoid; }
       .signature-cell { min-height: 88px; }
       .signature-mark-area { min-height: 50px; }
-      .signature-upload-control, .signature-upload-status { display: none !important; }
-      .actions { display: none !important; }
+      .actions, .submission-status, .submission-notice { display: none !important; }
       input, textarea { color: #111; }
     }
   </style>
@@ -279,7 +268,7 @@
       </div>
     </header>
 
-    <form id="bank-details-form">
+    <form id="bank-details-form" enctype="multipart/form-data">
       <h1 class="form-title">RESPONSIBILITY OF CORRECTNESS FOR BANK DETAILS IS ON SEAFARERS</h1>
 
       <section class="section" aria-labelledby="seafarer-heading">
@@ -376,6 +365,7 @@
           <input id="intermediary-required" name="intermediaryRequired" type="checkbox" aria-controls="intermediary-fields" aria-expanded="false">
           Intermediary bank details required
         </label>
+        <input id="intermediary-required-status" name="intermediaryRequiredStatus" type="hidden" value="No">
         <div class="field-grid" id="intermediary-fields" hidden>
           <div class="field">
             <label for="intermediary-beneficiary">Beneficiary Name</label>
@@ -415,14 +405,7 @@
       <section class="signature-row" aria-label="Signature and date">
         <div class="signature-cell">
           <p class="signature-label">Signature of Seafarer</p>
-          <div class="signature-mark-area">
-            <img class="signature-preview" id="signature-preview" alt="Uploaded seafarer signature" hidden>
-          </div>
-          <div class="signature-upload-control">
-            <label for="signature-file">Upload signature file (PNG, JPG, WebP)</label>
-            <input id="signature-file" name="signatureFile" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" aria-describedby="signature-upload-status">
-          </div>
-          <p class="signature-upload-status" id="signature-upload-status" role="status" aria-live="polite"></p>
+          <div class="signature-mark-area" aria-label="Blank area for handwritten signature"></div>
         </div>
         <div class="signature-cell">
           <label for="signature-date">Date</label>
@@ -436,81 +419,75 @@
         <button type="button" id="save-pdf">Save as PDF</button>
         <button type="reset" id="reset-form">Reset Form</button>
       </div>
+      <p class="submission-notice">Submitting sends the entered bank details to the company through EmailJS.</p>
+      <p class="submission-status" id="submission-status" role="status" aria-live="polite"></p>
     </form>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@5/dist/email.min.js"></script>
   <script>
     const form = document.getElementById('bank-details-form');
     const intermediaryToggle = document.getElementById('intermediary-required');
     const intermediaryFields = document.getElementById('intermediary-fields');
-    const signatureFileInput = document.getElementById('signature-file');
-    const signaturePreview = document.getElementById('signature-preview');
-    const signatureUploadStatus = document.getElementById('signature-upload-status');
-    let signaturePreviewUrl = '';
+    const intermediaryRequiredStatus = document.getElementById('intermediary-required-status');
+    const emailButton = document.getElementById('email-form');
+    const submissionStatus = document.getElementById('submission-status');
+    const emailJsServiceId = 'service_d4anu84';
+    const emailJsTemplateId = 'template_tqe4g1i';
 
-    function clearSignaturePreview() {
-      if (signaturePreviewUrl) URL.revokeObjectURL(signaturePreviewUrl);
-      signaturePreviewUrl = '';
-      signaturePreview.removeAttribute('src');
-      signaturePreview.hidden = true;
-      signatureUploadStatus.textContent = '';
+    if (window.emailjs) {
+      window.emailjs.init({ publicKey: '8321koMkomam6h7IA' });
     }
 
     function updateIntermediaryFields() {
       intermediaryFields.hidden = !intermediaryToggle.checked;
       intermediaryToggle.setAttribute('aria-expanded', String(intermediaryToggle.checked));
+      intermediaryRequiredStatus.value = intermediaryToggle.checked ? 'Yes' : 'No';
     }
 
     function printIfValid() {
       if (form.reportValidity()) window.print();
     }
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-
-      const details = [...form.querySelectorAll('input[name], textarea[name]')]
-        .filter((field) => !field.closest('[hidden]') && field.type !== 'checkbox' && field.type !== 'file')
-        .map((field) => {
-          const label = field.labels[0]?.textContent.replace('*', '').trim() || field.name;
-          return `${label}: ${field.value.trim() || '(blank)'}`;
-        });
-      details.push(`Intermediary bank details required: ${intermediaryToggle.checked ? 'Yes' : 'No'}`);
-      if (signatureFileInput.files[0]) details.push('Signature image selected; attach the image file manually to this email.');
-
-      const subject = `Seafarer Bank Details - ${document.getElementById('seafarer-name').value.trim()}`;
-      const body = `Seafarer Bank Details Form\n\n${details.join('\n')}`;
-      const email = 'offshore@alkabeerandpartners.com';
-      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    });
-
-    intermediaryToggle.addEventListener('change', updateIntermediaryFields);
-    signatureFileInput.addEventListener('change', () => {
-      const file = signatureFileInput.files[0];
-      if (!file) return;
-
-      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
-        signatureFileInput.value = '';
-        clearSignaturePreview();
-        signatureUploadStatus.textContent = 'Choose a PNG, JPG, or WebP image.';
+      if (!window.emailjs) {
+        submissionStatus.dataset.state = 'error';
+        submissionStatus.textContent = 'Email service could not load. Check your internet connection and try again.';
         return;
       }
 
-      if (signaturePreviewUrl) URL.revokeObjectURL(signaturePreviewUrl);
-      signaturePreviewUrl = URL.createObjectURL(file);
-      signaturePreview.src = signaturePreviewUrl;
-      signaturePreview.hidden = false;
-      signatureUploadStatus.textContent = `${file.name} selected. Attach the image manually when emailing the form.`;
+      emailButton.disabled = true;
+      submissionStatus.dataset.state = 'pending';
+      submissionStatus.textContent = 'Sending your form…';
+
+      try {
+        await window.emailjs.sendForm(emailJsServiceId, emailJsTemplateId, form);
+        form.reset();
+        submissionStatus.dataset.state = 'success';
+        submissionStatus.textContent = 'Form sent successfully to the company.';
+      } catch (error) {
+        submissionStatus.dataset.state = 'error';
+        const reason = [error?.text, error?.message]
+          .filter((value) => typeof value === 'string' && value.trim())
+          .join(' ')
+          .slice(0, 300);
+        submissionStatus.textContent = reason
+          ? `Email could not be sent: ${reason}. Your entries are still here.`
+          : 'Email could not be sent. Your entries are still here; check the EmailJS settings and try again.';
+      } finally {
+        emailButton.disabled = false;
+      }
     });
+
+    intermediaryToggle.addEventListener('change', updateIntermediaryFields);
     document.getElementById('print-form').addEventListener('click', printIfValid);
     document.getElementById('save-pdf').addEventListener('click', printIfValid);
     document.getElementById('reset-form').addEventListener('click', (event) => {
       if (!window.confirm('Reset all entered bank details?')) event.preventDefault();
     });
-    form.addEventListener('reset', () => requestAnimationFrame(() => {
-      updateIntermediaryFields();
-      clearSignaturePreview();
-    }));
+    form.addEventListener('reset', () => requestAnimationFrame(updateIntermediaryFields));
   </script>
 </body>
 </html>
